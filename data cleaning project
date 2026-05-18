@@ -1,0 +1,116 @@
+# =========================================
+# DATA CLEANING & VISUALIZATION PROJECT
+# =========================================
+
+# Import libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# -------------------------------
+# STEP 1: Create/Load Dataset
+# -------------------------------
+
+# Sample raw dataset
+data = {
+    'Name': ['A', 'B', 'C', 'D', 'E', 'F', 'F'],
+    'Age': [23, 25, np.nan, 29, 100, 27, 27],
+    'Salary': [40000, 50000, 60000, np.nan, 900000, 52000, 52000],
+    'Department': ['HR', 'IT', 'IT', 'Finance', None, 'HR', 'HR']
+}
+
+df = pd.DataFrame(data)
+
+print("Original Dataset:")
+print(df)
+
+# -------------------------------
+# STEP 2: Handle Missing Values
+# -------------------------------
+
+print("\nMissing Values:")
+print(df.isnull().sum())
+
+# Fill missing Age with mean
+df['Age'] = df['Age'].fillna(df['Age'].mean())
+
+# Fill missing Salary with median
+df['Salary'] = df['Salary'].fillna(df['Salary'].median())
+
+# Fill missing Department with mode
+df['Department'] = df['Department'].fillna(df['Department'].mode()[0])
+
+print("\nDataset After Handling Missing Values:")
+print(df)
+
+# -------------------------------
+# STEP 3: Remove Duplicates
+# -------------------------------
+
+df = df.drop_duplicates()
+
+print("\nDataset After Removing Duplicates:")
+print(df)
+
+# -------------------------------
+# STEP 4: Handle Outliers (IQR Method)
+# -------------------------------
+
+Q1 = df['Salary'].quantile(0.25)
+Q3 = df['Salary'].quantile(0.75)
+IQR = Q3 - Q1
+
+lower_limit = Q1 - 1.5 * IQR
+upper_limit = Q3 + 1.5 * IQR
+
+# Remove outliers
+df = df[(df['Salary'] >= lower_limit) &
+        (df['Salary'] <= upper_limit)]
+
+print("\nDataset After Removing Outliers:")
+print(df)
+
+# -------------------------------
+# STEP 5: Data Visualization
+# -------------------------------
+
+# Set style
+sns.set_style("whitegrid")
+
+# 1. Age Distribution
+plt.figure(figsize=(6,4))
+sns.histplot(df['Age'], bins=5, kde=True)
+plt.title("Age Distribution")
+plt.xlabel("Age")
+plt.ylabel("Count")
+plt.show()
+
+# 2. Salary Distribution
+plt.figure(figsize=(6,4))
+sns.boxplot(y=df['Salary'])
+plt.title("Salary Boxplot")
+plt.show()
+
+# 3. Department-wise Salary
+plt.figure(figsize=(6,4))
+sns.barplot(x='Department', y='Salary', data=df)
+plt.title("Department-wise Average Salary")
+plt.show()
+
+# 4. Correlation Heatmap
+plt.figure(figsize=(5,4))
+sns.heatmap(df[['Age', 'Salary']].corr(),
+            annot=True,
+            cmap='coolwarm')
+
+plt.title("Correlation Heatmap")
+plt.show()
+
+# -------------------------------
+# STEP 6: Save Cleaned Dataset
+# -------------------------------
+
+df.to_csv("cleaned_dataset.csv", index=False)
+
+print("\nCleaned dataset saved as 'cleaned_dataset.csv'")

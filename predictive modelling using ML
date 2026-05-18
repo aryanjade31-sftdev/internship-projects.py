@@ -1,0 +1,206 @@
+# =============================================
+# PREDICTIVE MODELING USING MACHINE LEARNING
+# =============================================
+
+# Import libraries
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Machine learning libraries
+from sklearn.datasets import load_breast_cancer
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import (
+    accuracy_score,
+    confusion_matrix,
+    classification_report,
+    roc_curve,
+    auc,
+    mean_squared_error,
+    r2_score
+)
+
+# --------------------------------------
+# STEP 1: Load Dataset
+# --------------------------------------
+
+# Load dataset
+data = load_breast_cancer()
+
+# Convert to DataFrame
+df = pd.DataFrame(data.data, columns=data.feature_names)
+df['target'] = data.target
+
+print("First 5 rows of dataset:")
+print(df.head())
+
+print("\nDataset Shape:", df.shape)
+
+# --------------------------------------
+# STEP 2: Prepare Features and Target
+# --------------------------------------
+
+X = df.drop('target', axis=1)
+y = df['target']
+
+# Split data into training and testing
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42
+)
+
+print("\nTraining Data Shape:", X_train.shape)
+print("Testing Data Shape:", X_test.shape)
+
+# ======================================
+# MODEL 1: LINEAR REGRESSION
+# ======================================
+
+print("\n===== LINEAR REGRESSION =====")
+
+lr_model = LinearRegression()
+
+# Train model
+lr_model.fit(X_train, y_train)
+
+# Prediction
+lr_pred = lr_model.predict(X_test)
+
+# Convert predictions into binary class
+lr_pred_binary = [1 if x > 0.5 else 0 for x in lr_pred]
+
+# Evaluation
+mse = mean_squared_error(y_test, lr_pred)
+r2 = r2_score(y_test, lr_pred)
+
+print("Mean Squared Error:", mse)
+print("R2 Score:", r2)
+
+# ======================================
+# MODEL 2: DECISION TREE
+# ======================================
+
+print("\n===== DECISION TREE =====")
+
+dt_model = DecisionTreeClassifier(random_state=42)
+
+# Train model
+dt_model.fit(X_train, y_train)
+
+# Predict
+dt_pred = dt_model.predict(X_test)
+
+# Accuracy
+dt_accuracy = accuracy_score(y_test, dt_pred)
+
+print("Decision Tree Accuracy:", dt_accuracy)
+
+print("\nClassification Report:")
+print(classification_report(y_test, dt_pred))
+
+# Confusion Matrix
+cm_dt = confusion_matrix(y_test, dt_pred)
+
+plt.figure(figsize=(6,4))
+sns.heatmap(cm_dt, annot=True, fmt='d', cmap='Blues')
+plt.title("Decision Tree Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+# ROC Curve
+dt_probs = dt_model.predict_proba(X_test)[:,1]
+
+fpr, tpr, thresholds = roc_curve(y_test, dt_probs)
+roc_auc = auc(fpr, tpr)
+
+plt.figure(figsize=(6,4))
+plt.plot(fpr, tpr, label='ROC Curve (AUC = %0.2f)' % roc_auc)
+plt.plot([0,1], [0,1], linestyle='--')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Decision Tree ROC Curve')
+plt.legend()
+plt.show()
+
+# ======================================
+# MODEL 3: RANDOM FOREST
+# ======================================
+
+print("\n===== RANDOM FOREST =====")
+
+rf_model = RandomForestClassifier(
+    n_estimators=100,
+    random_state=42
+)
+
+# Train model
+rf_model.fit(X_train, y_train)
+
+# Prediction
+rf_pred = rf_model.predict(X_test)
+
+# Accuracy
+rf_accuracy = accuracy_score(y_test, rf_pred)
+
+print("Random Forest Accuracy:", rf_accuracy)
+
+print("\nClassification Report:")
+print(classification_report(y_test, rf_pred))
+
+# Confusion Matrix
+cm_rf = confusion_matrix(y_test, rf_pred)
+
+plt.figure(figsize=(6,4))
+sns.heatmap(cm_rf, annot=True, fmt='d', cmap='Greens')
+plt.title("Random Forest Confusion Matrix")
+plt.xlabel("Predicted")
+plt.ylabel("Actual")
+plt.show()
+
+# ROC Curve
+rf_probs = rf_model.predict_proba(X_test)[:,1]
+
+fpr_rf, tpr_rf, thresholds_rf = roc_curve(
+    y_test,
+    rf_probs
+)
+
+roc_auc_rf = auc(fpr_rf, tpr_rf)
+
+plt.figure(figsize=(6,4))
+plt.plot(
+    fpr_rf,
+    tpr_rf,
+    label='ROC Curve (AUC = %0.2f)' % roc_auc_rf
+)
+
+plt.plot([0,1], [0,1], linestyle='--')
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('Random Forest ROC Curve')
+plt.legend()
+plt.show()
+
+# ======================================
+# STEP 6: Compare Models
+# ======================================
+
+print("\n===== MODEL COMPARISON =====")
+
+print("Decision Tree Accuracy :", dt_accuracy)
+print("Random Forest Accuracy :", rf_accuracy)
+
+models = ['Decision Tree', 'Random Forest']
+accuracies = [dt_accuracy, rf_accuracy]
+
+plt.figure(figsize=(6,4))
+plt.bar(models, accuracies)
+plt.title("Model Accuracy Comparison")
+plt.ylabel("Accuracy")
+plt.show()
