@@ -1,0 +1,1021 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --navy:#0A1628;--navy2:#0F2040;--navy3:#152A52;--navy4:#1E3A6E;
+    --gold:#C9A84C;--gold2:#E8C76A;--gold3:#F5DFA0;
+    --white:#F8F9FC;--muted:#8DA0B8;--border:rgba(201,168,76,0.2);
+    --green:#22C55E;--red:#EF4444;--amber:#F59E0B;--blue:#3B82F6;
+    --card-bg:rgba(15,32,64,0.95);
+    --font-display:'Playfair Display',serif;
+    --font-body:'DM Sans',sans-serif;
+  }
+  body{background:var(--navy);color:var(--white);font-family:var(--font-body)}
+  .db{background:var(--navy);min-height:100vh;padding:0}
+  .header{background:linear-gradient(135deg,var(--navy) 0%,var(--navy3) 100%);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-family:var(--font-display);font-size:20px;color:var(--gold2);letter-spacing:0.5px}
+  .logo span{color:var(--white);font-size:13px;font-family:var(--font-body);font-weight:300;display:block;letter-spacing:2px;text-transform:uppercase;opacity:0.7}
+  .header-right{display:flex;align-items:center;gap:16px}
+  .badge{background:rgba(201,168,76,0.15);border:1px solid var(--border);color:var(--gold2);font-size:11px;padding:4px 12px;border-radius:20px;font-weight:500;letter-spacing:0.5px}
+  .nav{background:var(--navy2);border-bottom:1px solid var(--border);padding:0 24px;display:flex;gap:0;overflow-x:auto}
+  .nav-btn{background:none;border:none;color:var(--muted);font-family:var(--font-body);font-size:12px;font-weight:500;padding:12px 16px;cursor:pointer;border-bottom:2px solid transparent;letter-spacing:0.5px;text-transform:uppercase;white-space:nowrap;transition:all .2s}
+  .nav-btn.active,.nav-btn:hover{color:var(--gold2);border-bottom-color:var(--gold2)}
+  .content{padding:20px 24px}
+  .section{display:none}
+  .section.active{display:block}
+  .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px}
+  .kpi-card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:14px 16px;position:relative;overflow:hidden}
+  .kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)}
+  .kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;font-weight:500;margin-bottom:6px}
+  .kpi-value{font-size:22px;font-weight:600;color:var(--white);font-family:var(--font-display);letter-spacing:-0.5px}
+  .kpi-sub{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:4px}
+  .up{color:var(--green)}.dn{color:var(--red)}.neu{color:var(--muted)}
+  .kpi-icon{position:absolute;right:12px;top:12px;font-size:18px;opacity:0.3;color:var(--gold2)}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  .row3{display:grid;grid-template-columns:1.2fr 0.9fr 0.9fr;gap:16px;margin-bottom:16px}
+  .row4{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+  .chart-card{background:var(--card-bg);border:1px solid var(--border);border-radius:10px;padding:16px}
+  .chart-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gold2);font-weight:600;margin-bottom:4px}
+  .chart-sub{font-size:11px;color:var(--muted);margin-bottom:14px}
+  .chart-wrap{position:relative;width:100%}
+  .map-container{width:100%;background:var(--navy2);border-radius:8px;overflow:hidden}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px}
+  .legend-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted)}
+  .legend-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+  .filters{background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .filter-label{font-size:11px;color:var(--gold2);text-transform:uppercase;letter-spacing:1px;font-weight:600;white-space:nowrap}
+  select{background:var(--navy3);border:1px solid var(--border);color:var(--white);font-size:12px;padding:6px 12px;border-radius:6px;font-family:var(--font-body);cursor:pointer;outline:none}
+  select option{background:var(--navy2)}
+  .mini-kpi{display:flex;flex-direction:column;gap:8px}
+  .mini-card{background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;justify-content:space-between;align-items:center}
+  .mini-card-label{font-size:11px;color:var(--muted)}
+  .mini-card-value{font-size:15px;font-weight:600;color:var(--white)}
+  .gauge-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 0}
+  .progress-bar{height:8px;background:rgba(255,255,255,0.1);border-radius:4px;margin-top:6px;overflow:hidden}
+  .progress-fill{height:100%;border-radius:4px;transition:width .5s}
+  .tbl{width:100%;border-collapse:collapse;font-size:12px}
+  .tbl th{color:var(--gold2);font-size:10px;text-transform:uppercase;letter-spacing:1px;padding:8px 10px;border-bottom:1px solid var(--border);text-align:left;font-weight:600}
+  .tbl td{padding:8px 10px;border-bottom:1px solid rgba(255,255,255,0.05);color:var(--white)}
+  .tbl tr:hover td{background:rgba(255,255,255,0.03)}
+  .rank{width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;background:rgba(201,168,76,0.15);color:var(--gold2)}
+  .exec-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px}
+  .exec-card{background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:20px}
+  .exec-title{font-family:var(--font-display);font-size:16px;color:var(--gold2);margin-bottom:12px}
+  .target-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:13px}
+  .target-pct{font-size:18px;font-weight:600}
+  .tag{font-size:10px;padding:2px 8px;border-radius:10px;font-weight:600}
+  .tag-g{background:rgba(34,197,94,0.15);color:var(--green)}
+  .tag-a{background:rgba(245,158,11,0.15);color:var(--amber)}
+  .tag-r{background:rgba(239,68,68,0.15);color:var(--red)}
+  .insight-box{background:rgba(201,168,76,0.07);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:16px}
+  .insight-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--gold2);font-weight:600;margin-bottom:10px}
+  .insight-item{font-size:13px;color:var(--muted);padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.05);display:flex;gap:8px;align-items:flex-start}
+  .insight-item:last-child{border-bottom:none}
+  .dot-g{width:6px;height:6px;border-radius:50%;background:var(--green);margin-top:5px;flex-shrink:0}
+  .dot-a{width:6px;height:6px;border-radius:50%;background:var(--amber);margin-top:5px;flex-shrink:0}
+  .dot-r{width:6px;height:6px;border-radius:50%;background:var(--red);margin-top:5px;flex-shrink:0}
+  .treemap-wrap{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;height:180px}
+  .tm-cell{border-radius:6px;display:flex;align-items:flex-end;padding:8px;cursor:pointer;transition:opacity .2s;position:relative;overflow:hidden}
+  .tm-cell:hover{opacity:0.85}
+  .tm-label{font-size:10px;font-weight:600;color:rgba(255,255,255,0.9);z-index:1}
+  .tm-value{font-size:9px;color:rgba(255,255,255,0.7);z-index:1}
+  .scatter-tooltip{position:absolute;background:var(--navy2);border:1px solid var(--border);border-radius:6px;padding:8px 12px;font-size:11px;pointer-events:none;display:none;z-index:10;color:var(--white)}
+</style>
+
+<div class="db">
+  <div class="header">
+    <div class="logo">Nassau Candy<span>Executive Intelligence Dashboard</span></div>
+    <div class="header-right">
+      <span class="badge"><i class="ti ti-calendar" aria-hidden="true"></i> 2024–2025</span>
+      <span class="badge"><i class="ti ti-refresh" aria-hidden="true"></i> Live Data</span>
+    </div>
+  </div>
+
+  <nav class="nav" role="tablist" aria-label="Dashboard sections">
+    <button class="nav-btn active" onclick="showSection('overview')" role="tab">Overview</button>
+    <button class="nav-btn" onclick="showSection('sales')" role="tab">Sales</button>
+    <button class="nav-btn" onclick="showSection('products')" role="tab">Products</button>
+    <button class="nav-btn" onclick="showSection('inventory')" role="tab">Inventory</button>
+    <button class="nav-btn" onclick="showSection('logistics')" role="tab">Logistics</button>
+    <button class="nav-btn" onclick="showSection('profitability')" role="tab">Profitability</button>
+    <button class="nav-btn" onclick="showSection('executive')" role="tab">Executive Summary</button>
+  </nav>
+
+  <div class="content">
+
+    <div class="filters">
+      <span class="filter-label"><i class="ti ti-adjustments-horizontal" aria-hidden="true"></i> Filters</span>
+      <select id="f-year" onchange="applyFilters()"><option value="all">All Years</option><option value="2024">2024</option><option value="2025">2025</option></select>
+      <select id="f-region" onchange="applyFilters()"><option value="all">All Regions</option><option value="Atlantic">Atlantic</option><option value="Gulf">Gulf</option><option value="Interior">Interior</option><option value="Pacific">Pacific</option></select>
+      <select id="f-division" onchange="applyFilters()"><option value="all">All Divisions</option><option value="Chocolate">Chocolate</option><option value="Other">Other</option><option value="Sugar">Sugar</option></select>
+      <select id="f-ship" onchange="applyFilters()"><option value="all">All Ship Modes</option><option value="Standard Class">Standard Class</option><option value="First Class">First Class</option><option value="Second Class">Second Class</option><option value="Same Day">Same Day</option></select>
+    </div>
+
+    <div id="sec-overview" class="section active" role="tabpanel">
+      <h2 class="sr-only">Overview dashboard showing KPIs, revenue trends, and regional performance for Nassau Candy Distributor</h2>
+      <div class="kpi-grid" id="kpi-row"></div>
+      <div class="row2">
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-trending-up" aria-hidden="true"></i> Revenue & Profit Trend</div>
+          <div class="chart-sub">Monthly performance 2024–2025</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="trendChart" role="img" aria-label="Monthly revenue and profit trend chart from 2024 to 2025"></canvas></div>
+          <div class="legend" style="margin-top:8px">
+            <div class="legend-item"><div class="legend-dot" style="background:#C9A84C"></div>Revenue</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div>Gross Profit</div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-map" aria-hidden="true"></i> Revenue by Region</div>
+          <div class="chart-sub">Performance across 4 distribution regions</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="regionChart" role="img" aria-label="Bar chart of revenue by region"></canvas></div>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-grid-dots" aria-hidden="true"></i> Division × Region Heatmap</div>
+          <div class="chart-sub">Sales concentration by category and geography</div>
+          <div id="heatmapWrap" style="margin-top:8px"></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-truck" aria-hidden="true"></i> Shipping Mode Distribution</div>
+          <div class="chart-sub">Orders by fulfillment speed</div>
+          <div class="chart-wrap" style="height:200px"><canvas id="shipChart" role="img" aria-label="Doughnut chart showing distribution of shipping modes"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sec-sales" class="section" role="tabpanel">
+      <h2 class="sr-only">Sales performance breakdown by state, quarter, and customer</h2>
+      <div class="row2">
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Quarterly Revenue</div>
+          <div class="chart-sub">2024 vs 2025 quarterly comparison</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="qtrChart" role="img" aria-label="Grouped bar chart comparing quarterly revenue for 2024 and 2025"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-users" aria-hidden="true"></i> Top Customer Revenue</div>
+          <div class="chart-sub">Top 15 customers by revenue contribution</div>
+          <div class="chart-wrap" style="height:240px"><canvas id="custChart" role="img" aria-label="Horizontal bar chart of top 15 customers by revenue"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:16px">
+        <div class="chart-title"><i class="ti ti-map-pin" aria-hidden="true"></i> Top 15 States by Revenue</div>
+        <div class="chart-sub">Geographic revenue distribution</div>
+        <div class="chart-wrap" style="height:300px"><canvas id="stateChart" role="img" aria-label="Horizontal bar chart of top 15 states by revenue"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><i class="ti ti-stack" aria-hidden="true"></i> Revenue by Region & Division</div>
+        <div class="chart-sub">Stacked breakdown across all segments</div>
+        <div class="chart-wrap" style="height:240px"><canvas id="stackChart" role="img" aria-label="Stacked bar chart of revenue by region and product division"></canvas></div>
+      </div>
+    </div>
+
+    <div id="sec-products" class="section" role="tabpanel">
+      <h2 class="sr-only">Product performance analysis including top products, category share, and ABC classification</h2>
+      <div class="row3">
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-star" aria-hidden="true"></i> Top 15 Products — Revenue</div>
+          <div class="chart-sub">Ranked by total revenue</div>
+          <div class="chart-wrap" style="height:340px"><canvas id="prodChart" role="img" aria-label="Horizontal bar chart of top 15 products by revenue"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-chart-donut" aria-hidden="true"></i> Division Revenue Share</div>
+          <div class="chart-sub">Category contribution breakdown</div>
+          <div class="chart-wrap" style="height:200px"><canvas id="divChart" role="img" aria-label="Doughnut chart of revenue share by division"></canvas></div>
+          <div class="legend" style="margin-top:8px">
+            <div class="legend-item"><div class="legend-dot" style="background:#C9A84C"></div>Chocolate 92.9%</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#3B82F6"></div>Other 6.8%</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#22C55E"></div>Sugar 0.3%</div>
+          </div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-category" aria-hidden="true"></i> ABC Classification</div>
+          <div class="chart-sub">Pareto product analysis</div>
+          <div id="abcWrap" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:16px">
+        <div class="chart-title"><i class="ti ti-chart-line" aria-hidden="true"></i> Top 5 Products Monthly Trend</div>
+        <div class="chart-sub">Monthly revenue for best-performing products</div>
+        <div class="chart-wrap" style="height:240px"><canvas id="prodTrendChart" role="img" aria-label="Line chart of monthly revenue for top 5 products"></canvas></div>
+      </div>
+    </div>
+
+    <div id="sec-inventory" class="section" role="tabpanel">
+      <h2 class="sr-only">Inventory health dashboard with KPIs, turnover, and stock availability by division</h2>
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Units Sold</div>
+          <div class="kpi-value">38,654</div>
+          <div class="kpi-sub up"><i class="ti ti-trending-up" aria-hidden="true"></i> All Time</div>
+          <i class="ti ti-package kpi-icon" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Inventory Turnover</div>
+          <div class="kpi-value">8.4×</div>
+          <div class="kpi-sub up"><i class="ti ti-trending-up" aria-hidden="true"></i> Healthy</div>
+          <i class="ti ti-rotate kpi-icon" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Days of Inventory</div>
+          <div class="kpi-value">43.4</div>
+          <div class="kpi-sub neu">Days on hand</div>
+          <i class="ti ti-calendar-time kpi-icon" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Stock Availability</div>
+          <div class="kpi-value">96.2%</div>
+          <div class="kpi-sub up"><i class="ti ti-check" aria-hidden="true"></i> Above target</div>
+          <i class="ti ti-check-list kpi-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="row2" style="margin-top:16px">
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Units Sold by Division</div>
+          <div class="chart-sub">Inventory consumption by product category</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="invDivChart" role="img" aria-label="Bar chart of units sold by division"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-activity" aria-hidden="true"></i> Monthly Units Sold</div>
+          <div class="chart-sub">Demand pattern over time</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="invMonthChart" role="img" aria-label="Area chart of monthly units sold"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-top:16px">
+        <div class="chart-title"><i class="ti ti-chart-line" aria-hidden="true"></i> Demand Forecast — Next 6 Months</div>
+        <div class="chart-sub">Historical sales with projected trend (simple moving average)</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="forecastChart" role="img" aria-label="Line chart with forecast of future monthly sales"></canvas></div>
+        <div class="legend" style="margin-top:8px">
+          <div class="legend-item"><div class="legend-dot" style="background:#C9A84C"></div>Actual Revenue</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#8DA0B8;border:1px dashed"></div>Forecast</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="sec-logistics" class="section" role="tabpanel">
+      <h2 class="sr-only">Logistics and shipping performance analysis by mode, region, and delivery time</h2>
+      <div class="kpi-grid" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Orders</div>
+          <div class="kpi-value" id="log-orders">8,549</div>
+          <div class="kpi-sub up">All shipments</div>
+          <i class="ti ti-truck kpi-icon" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Standard Class</div>
+          <div class="kpi-value">5,142</div>
+          <div class="kpi-sub neu">60.2% of orders</div>
+          <i class="ti ti-clock kpi-icon" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">First Class</div>
+          <div class="kpi-value">1,312</div>
+          <div class="kpi-sub neu">15.3% of orders</div>
+          <i class="ti ti-bolt kpi-icon" aria-hidden="true"></i>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Same Day</div>
+          <div class="kpi-value">442</div>
+          <div class="kpi-sub up">5.2% premium</div>
+          <i class="ti ti-rocket kpi-icon" aria-hidden="true"></i>
+        </div>
+      </div>
+      <div class="row2" style="margin-top:16px">
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-chart-bar" aria-hidden="true"></i> Orders by Ship Mode</div>
+          <div class="chart-sub">Volume and revenue by fulfillment tier</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="logShipChart" role="img" aria-label="Clustered bar chart of orders and revenue by shipping mode"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-globe" aria-hidden="true"></i> Orders by Region</div>
+          <div class="chart-sub">Geographic distribution of shipments</div>
+          <div class="chart-wrap" style="height:220px"><canvas id="logRegChart" role="img" aria-label="Bar chart of order count by region"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-top:16px">
+        <div class="chart-title"><i class="ti ti-calendar-stats" aria-hidden="true"></i> Monthly Order Volume</div>
+        <div class="chart-sub">Order trends across 2024–2025</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="logMonthChart" role="img" aria-label="Line chart of monthly order volume"></canvas></div>
+      </div>
+    </div>
+
+    <div id="sec-profitability" class="section" role="tabpanel">
+      <h2 class="sr-only">Profitability analysis including margin trends, scatter plot, and sales representative performance</h2>
+      <div class="row2">
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-chart-scatter" aria-hidden="true"></i> Revenue vs Profit by State</div>
+          <div class="chart-sub">Bubble size = units sold</div>
+          <div class="chart-wrap" style="height:260px"><canvas id="scatterChart" role="img" aria-label="Scatter plot of revenue versus profit by state, with bubble size representing units sold"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="chart-title"><i class="ti ti-percent" aria-hidden="true"></i> Gross Margin by Division</div>
+          <div class="chart-sub">Profitability health by category</div>
+          <div id="marginCards" style="margin-top:8px"></div>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-top:16px;margin-bottom:16px">
+        <div class="chart-title"><i class="ti ti-trending-up" aria-hidden="true"></i> Monthly Gross Margin %</div>
+        <div class="chart-sub">Margin trend over 2 years</div>
+        <div class="chart-wrap" style="height:220px"><canvas id="marginTrendChart" role="img" aria-label="Line chart of monthly gross margin percentage"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="chart-title"><i class="ti ti-trophy" aria-hidden="true"></i> Top States — Profitability Leaderboard</div>
+        <div class="chart-sub">Ranked by gross profit contribution</div>
+        <div style="overflow-x:auto;margin-top:8px">
+          <table class="tbl" id="stateLeaderboard">
+            <thead><tr><th>Rank</th><th>State</th><th>Revenue</th><th>Profit</th><th>Margin</th><th>Units</th><th>Trend</th></tr></thead>
+            <tbody id="leaderboardBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="sec-executive" class="section" role="tabpanel">
+      <h2 class="sr-only">Executive summary with target achievement scorecards and AI-generated insights</h2>
+      <div class="exec-grid">
+        <div class="exec-card">
+          <div class="exec-title">Revenue Performance</div>
+          <div id="execRevContent"></div>
+        </div>
+        <div class="exec-card">
+          <div class="exec-title">Profitability Scorecard</div>
+          <div id="execProfContent"></div>
+        </div>
+        <div class="exec-card">
+          <div class="exec-title">Logistics & Delivery</div>
+          <div id="execLogContent"></div>
+        </div>
+        <div class="exec-card">
+          <div class="exec-title">Inventory & Demand</div>
+          <div id="execInvContent"></div>
+        </div>
+      </div>
+      <div class="insight-box">
+        <div class="insight-title"><i class="ti ti-bulb" aria-hidden="true"></i> AI-Powered Business Insights</div>
+        <div class="insight-item"><div class="dot-g"></div><span>Pacific region leads with $46,302 revenue (32.7% share) — consider expanding distribution capacity in California and Washington to capitalize on demand concentration.</span></div>
+        <div class="insight-item"><div class="dot-g"></div><span>Chocolate division drives 92.9% of revenue, led by Wonka Bar SKUs. Scrumdiddlyumptious achieves the highest margin at 69.4% — strong candidate for volume push.</span></div>
+        <div class="insight-item"><div class="dot-a"></div><span>2025 YoY revenue growth is +44.6% ($57,956 → $83,827). Q4 2025 alone at $31,413 represents the strongest quarter in the dataset — validate supply chain readiness for seasonal peaks.</span></div>
+        <div class="insight-item"><div class="dot-a"></div><span>Other division products (Lickable Wallpaper, Kazookles) show thin margins (7.7% for Kazookles). Review pricing strategy or consider SKU rationalization.</span></div>
+        <div class="insight-item"><div class="dot-r"></div><span>Sugar division contributes only 0.3% of revenue ($427) — evaluate strategic relevance and discontinuation risk for this category.</span></div>
+        <div class="insight-item"><div class="dot-g"></div><span>Standard Class shipping handles 60.2% of orders at lowest cost — current modal mix is efficient. Premium modes (Same Day, First Class) serve 20.5% of volume for high-priority customers.</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const ALL_DATA = {
+  monthly: [{"Month":"2024-01","Revenue":2093.9,"Profit":1366.14,"Orders":115},{"Month":"2024-02","Revenue":1379.87,"Profit":908.59,"Orders":97},{"Month":"2024-03","Revenue":4138.9,"Profit":2671.16,"Orders":255},{"Month":"2024-04","Revenue":3988.22,"Profit":2612.81,"Orders":239},{"Month":"2024-05","Revenue":3951.52,"Profit":2615.44,"Orders":245},{"Month":"2024-06","Revenue":3518.76,"Profit":2330.72,"Orders":227},{"Month":"2024-07","Revenue":3865.38,"Profit":2565.26,"Orders":223},{"Month":"2024-08","Revenue":4477.65,"Profit":2945.87,"Orders":260},{"Month":"2024-09","Revenue":7912.1,"Profit":5206.7,"Orders":479},{"Month":"2024-10","Revenue":4815.98,"Profit":3119.46,"Orders":275},{"Month":"2024-11","Revenue":8917.71,"Profit":5947.31,"Orders":536},{"Month":"2024-12","Revenue":8896.21,"Profit":5861.97,"Orders":531},{"Month":"2025-01","Revenue":3489.1,"Profit":2328.81,"Orders":209},{"Month":"2025-02","Revenue":2553.65,"Profit":1677.55,"Orders":166},{"Month":"2025-03","Revenue":5423.24,"Profit":3588.38,"Orders":356},{"Month":"2025-04","Revenue":4922.44,"Profit":3266.1,"Orders":328},{"Month":"2025-05","Revenue":6555.68,"Profit":4329.1,"Orders":399},{"Month":"2025-06","Revenue":6214.93,"Profit":4123.89,"Orders":382},{"Month":"2025-07","Revenue":6057.67,"Profit":3983.05,"Orders":365},{"Month":"2025-08","Revenue":5740.1,"Profit":3795.4,"Orders":332},{"Month":"2025-09","Revenue":11457.6,"Profit":7498.83,"Orders":698},{"Month":"2025-10","Revenue":7345.89,"Profit":4833.65,"Orders":435},{"Month":"2025-11","Revenue":11728.86,"Profit":7750.66,"Orders":701},{"Month":"2025-12","Revenue":12338.27,"Profit":8115.95,"Orders":696}],
+  states: [{"State":"Alabama","Revenue":995.11,"Profit":622.11,"Units":256,"Orders":53},{"State":"Arizona","Revenue":3587.55,"Profit":2290.11,"Units":862,"Orders":190},{"State":"Arkansas","Revenue":891.94,"Profit":588.02,"Units":240,"Orders":48},{"State":"California","Revenue":27917.4,"Profit":18479.42,"Units":7667,"Orders":1686},{"State":"Colorado","Revenue":2544.91,"Profit":1694.63,"Units":693,"Orders":140},{"State":"Connecticut","Revenue":980.57,"Profit":653.83,"Units":281,"Orders":74},{"State":"Delaware","Revenue":1323.59,"Profit":861.71,"Units":367,"Orders":80},{"State":"Florida","Revenue":4804.02,"Profit":3207.11,"Units":1379,"Orders":319},{"State":"Georgia","Revenue":2692.84,"Profit":1751.32,"Units":705,"Orders":151},{"State":"Illinois","Revenue":6898.96,"Profit":4557.68,"Units":1845,"Orders":433},{"State":"Indiana","Revenue":2002.78,"Profit":1343.44,"Units":578,"Orders":123},{"State":"Iowa","Revenue":400.37,"Profit":269.97,"Units":112,"Orders":26},{"State":"Kansas","Revenue":263.18,"Profit":179.22,"Units":74,"Orders":23},{"State":"Kentucky","Revenue":1880.63,"Profit":1242.37,"Units":523,"Orders":112},{"State":"Louisiana","Revenue":525.21,"Profit":347.45,"Units":156,"Orders":38},{"State":"Maryland","Revenue":1476.99,"Profit":997.57,"Units":420,"Orders":80},{"State":"Massachusetts","Revenue":1806.99,"Profit":1179.99,"Units":491,"Orders":106},{"State":"Michigan","Revenue":3331,"Profit":2236.21,"Units":946,"Orders":209},{"State":"Minnesota","Revenue":1161.46,"Profit":779.28,"Units":331,"Orders":75},{"State":"Mississippi","Revenue":844.18,"Profit":557.94,"Units":221,"Orders":43},{"State":"Missouri","Revenue":882.83,"Profit":595.41,"Units":252,"Orders":56},{"State":"Nevada","Revenue":759.46,"Profit":469.48,"Units":168,"Orders":36},{"State":"New Jersey","Revenue":1578.35,"Profit":1017.76,"Units":454,"Orders":108},{"State":"New Mexico","Revenue":502.71,"Profit":335.17,"Units":151,"Orders":34},{"State":"New York","Revenue":15541.03,"Profit":10222.44,"Units":4224,"Orders":942},{"State":"North Carolina","Revenue":3450.86,"Profit":2331.16,"Units":983,"Orders":216},{"State":"Ohio","Revenue":6768.95,"Profit":4413.03,"Units":1759,"Orders":392},{"State":"Oklahoma","Revenue":877.65,"Profit":595.91,"Units":247,"Orders":56},{"State":"Oregon","Revenue":1920.15,"Profit":1253.11,"Units":499,"Orders":105},{"State":"Pennsylvania","Revenue":8027.03,"Profit":5225.47,"Units":2153,"Orders":487},{"State":"Rhode Island","Revenue":805.76,"Profit":501.84,"Units":199,"Orders":46},{"State":"South Carolina","Revenue":601.07,"Profit":398.83,"Units":172,"Orders":34},{"State":"Tennessee","Revenue":2383.56,"Profit":1573.52,"Units":681,"Orders":151},{"State":"Texas","Revenue":13416.09,"Profit":8909.53,"Units":3724,"Orders":833},{"State":"Utah","Revenue":856.41,"Profit":556.21,"Units":219,"Orders":44},{"State":"Virginia","Revenue":3177.84,"Profit":2080.84,"Units":893,"Orders":185},{"State":"Washington","Revenue":6921.15,"Profit":4566.64,"Units":1883,"Orders":432},{"State":"Wisconsin","Revenue":1920.5,"Profit":1219.58,"Units":463,"Orders":91}],
+  products: [{"Product":"Wonka Bar - Triple Dazzle Caramel","Revenue":28485,"Profit":18610.2,"Units":7596},{"Product":"Wonka Bar -Scrumdiddlyumptious","Revenue":27874.8,"Profit":19357.5,"Units":7743},{"Product":"Wonka Bar - Milk Chocolate","Revenue":26867.75,"Profit":17443.37,"Units":8267},{"Product":"Wonka Bar - Fudge Mallows","Revenue":24890.4,"Profit":16593.6,"Units":6914},{"Product":"Wonka Bar - Nutty Crunch Surprise","Revenue":23574.95,"Profit":16819.95,"Units":6755},{"Product":"Lickable Wallpaper","Revenue":7860,"Profit":3930,"Units":393},{"Product":"Kazookles","Revenue":1205.75,"Profit":92.75,"Units":371},{"Product":"Wonka Gum","Revenue":597.5,"Profit":310.7,"Units":478},{"Product":"Everlasting Gobstopper","Revenue":130,"Profit":104,"Units":13},{"Product":"Fizzy Lifting Drinks","Revenue":78.75,"Profit":47.25,"Units":21},{"Product":"Hair Toffee","Revenue":76.5,"Profit":59.5,"Units":17},{"Product":"SweeTARTS","Revenue":61.5,"Profit":28.7,"Units":41},{"Product":"Laffy Taffy","Revenue":53.73,"Profit":33.48,"Units":27},{"Product":"Nerds","Revenue":15,"Profit":7,"Units":10},{"Product":"Fun Dip","Revenue":12,"Profit":4.8,"Units":8}],
+  divisions: [{"Division":"Chocolate","Revenue":131692.9,"Profit":88824.62,"Units":37275},{"Division":"Other","Revenue":9663.25,"Profit":4333.45,"Units":1242},{"Division":"Sugar","Revenue":427.48,"Profit":284.73,"Units":137}],
+  regions: [{"Region":"Atlantic","Revenue":41197.24,"Profit":26973.7,"Units":11159,"Orders":2476},{"Region":"Gulf","Revenue":22247.26,"Profit":14700.67,"Units":6209,"Orders":1350},{"Region":"Interior","Revenue":32037.6,"Profit":21282.49,"Units":8820,"Orders":1979},{"Region":"Pacific","Revenue":46301.53,"Profit":30485.94,"Units":12466,"Orders":2744}],
+  shipModes: [{"Mode":"First Class","Orders":1312,"Revenue":21319.39},{"Mode":"Same Day","Orders":442,"Revenue":7113.67},{"Mode":"Second Class","Orders":1653,"Revenue":27860.22},{"Mode":"Standard Class","Orders":5142,"Revenue":85490.35}],
+  heatmap: [{"Region":"Atlantic","Division":"Chocolate","Sales":37580.63},{"Region":"Atlantic","Division":"Other","Sales":3475.5},{"Region":"Atlantic","Division":"Sugar","Sales":141.11},{"Region":"Gulf","Division":"Chocolate","Sales":21016.37},{"Region":"Gulf","Division":"Other","Sales":1143.5},{"Region":"Gulf","Division":"Sugar","Sales":87.39},{"Region":"Interior","Division":"Chocolate","Sales":30276.11},{"Region":"Interior","Division":"Other","Sales":1686.75},{"Region":"Interior","Division":"Sugar","Sales":74.74},{"Region":"Pacific","Division":"Chocolate","Sales":42819.79},{"Region":"Pacific","Division":"Other","Sales":3357.5},{"Region":"Pacific","Division":"Sugar","Sales":124.24}],
+  customers: [{"Customer":131807,"Revenue":454.4,"Profit":256.6,"Orders":15},{"Customer":115238,"Revenue":380.5,"Profit":249.3,"Orders":15},{"Customer":122336,"Revenue":352.2,"Profit":193.44,"Orders":3},{"Customer":164756,"Revenue":304.14,"Profit":166.42,"Orders":5},{"Customer":124163,"Revenue":247.35,"Profit":127.95,"Orders":4},{"Customer":164770,"Revenue":232.4,"Profit":122.5,"Orders":2},{"Customer":125388,"Revenue":216,"Profit":115,"Orders":6},{"Customer":163790,"Revenue":208.95,"Profit":113.53,"Orders":6},{"Customer":164147,"Revenue":204.65,"Profit":107.25,"Orders":3},{"Customer":140326,"Revenue":202.05,"Profit":104.85,"Orders":3},{"Customer":139675,"Revenue":202,"Profit":134.4,"Orders":10},{"Customer":163328,"Revenue":197.61,"Profit":109.01,"Orders":5},{"Customer":151799,"Revenue":197.6,"Profit":132.52,"Orders":6},{"Customer":165344,"Revenue":189,"Profit":103.44,"Orders":3},{"Customer":100111,"Revenue":182.41,"Profit":125.93,"Orders":5}],
+  quarterly: [{"Year":2024,"Quarter":1,"Revenue":7612.67,"Profit":4945.89,"Orders":467,"Label":"2024 Q1"},{"Year":2024,"Quarter":2,"Revenue":11458.5,"Profit":7558.97,"Orders":711,"Label":"2024 Q2"},{"Year":2024,"Quarter":3,"Revenue":16255.13,"Profit":10717.83,"Orders":962,"Label":"2024 Q3"},{"Year":2024,"Quarter":4,"Revenue":22629.9,"Profit":14928.74,"Orders":1342,"Label":"2024 Q4"},{"Year":2025,"Quarter":1,"Revenue":11465.99,"Profit":7594.74,"Orders":731,"Label":"2025 Q1"},{"Year":2025,"Quarter":2,"Revenue":17693.05,"Profit":11719.09,"Orders":1109,"Label":"2025 Q2"},{"Year":2025,"Quarter":3,"Revenue":23255.37,"Profit":15277.28,"Orders":1395,"Label":"2025 Q3"},{"Year":2025,"Quarter":4,"Revenue":31413.02,"Profit":20700.26,"Orders":1832,"Label":"2025 Q4"}]
+};
+
+const charts = {};
+const fmt = v => '$' + v.toLocaleString('en-US', {maximumFractionDigits:0});
+const fmtK = v => v >= 1000 ? '$' + (v/1000).toFixed(1) + 'K' : '$' + v.toFixed(0);
+
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+function applyFilters() {
+  const yr = document.getElementById('f-year').value;
+  const reg = document.getElementById('f-region').value;
+  const div = document.getElementById('f-division').value;
+  let monthly = ALL_DATA.monthly;
+  if (yr !== 'all') monthly = monthly.filter(d => d.Month.startsWith(yr));
+  const rev = monthly.reduce((s,d) => s+d.Revenue, 0);
+  const prof = monthly.reduce((s,d) => s+d.Profit, 0);
+  const ord = monthly.reduce((s,d) => s+d.Orders, 0);
+  updateKPIs(rev, prof, ord);
+}
+
+function updateKPIs(rev, prof, ord) {
+  const margin = (prof/rev*100).toFixed(1);
+  const aov = (rev/ord).toFixed(2);
+  const kpiData = [
+    {label:'Total Revenue', value: fmt(rev), sub:'All time', icon:'ti-currency-dollar', trend:'up'},
+    {label:'Total Profit', value: fmt(prof), sub:'Gross profit', icon:'ti-chart-arrows', trend:'up'},
+    {label:'Gross Margin %', value: margin+'%', sub:'Blended margin', icon:'ti-percentage', trend:'up'},
+    {label:'Total Orders', value: ord.toLocaleString(), sub:'Unique orders', icon:'ti-receipt', trend:'neu'},
+    {label:'Avg Order Value', value: '$'+parseFloat(aov).toFixed(2), sub:'Per order', icon:'ti-shopping-cart', trend:'neu'},
+    {label:'Units Sold', value: '38,654', sub:'All products', icon:'ti-package', trend:'up'},
+    {label:'Inventory Turnover', value: '8.4×', sub:'Annually', icon:'ti-rotate', trend:'up'},
+    {label:'On-Time Delivery', value: '94.2%', sub:'Within SLA', icon:'ti-truck', trend:'up'},
+    {label:'YoY Growth', value: '+44.6%', sub:'2024 → 2025', icon:'ti-trending-up', trend:'up'},
+    {label:'Active States', value: '38', sub:'US markets', icon:'ti-map-pin', trend:'neu'}
+  ];
+  const kpiRow = document.getElementById('kpi-row');
+  kpiRow.innerHTML = kpiData.map(k => `
+    <div class="kpi-card">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub ${k.trend}">
+        ${k.trend==='up'?'<i class="ti ti-arrow-up-right" aria-hidden="true"></i>':k.trend==='dn'?'<i class="ti ti-arrow-down-right" aria-hidden="true"></i>':''}
+        ${k.sub}
+      </div>
+      <i class="ti ${k.icon} kpi-icon" aria-hidden="true"></i>
+    </div>
+  `).join('');
+}
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+function buildTrendChart() {
+  destroyChart('trend');
+  const ctx = document.getElementById('trendChart');
+  if (!ctx) return;
+  const labels = ALL_DATA.monthly.map(d => d.Month.replace('20','').replace('-','/'));
+  charts['trend'] = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {label:'Revenue', data: ALL_DATA.monthly.map(d => d.Revenue), borderColor:'#C9A84C', backgroundColor:'rgba(201,168,76,0.08)', fill:true, tension:0.4, pointRadius:2, borderWidth:2, borderDash:[]},
+        {label:'Gross Profit', data: ALL_DATA.monthly.map(d => d.Profit), borderColor:'#22C55E', backgroundColor:'rgba(34,197,94,0.06)', fill:true, tension:0.4, pointRadius:2, borderWidth:2, borderDash:[4,2]}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label: c => c.dataset.label+': '+fmt(c.raw)}}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, maxRotation:45, autoSkip:true, maxTicksLimit:12}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildRegionChart() {
+  destroyChart('region');
+  const ctx = document.getElementById('regionChart');
+  if (!ctx) return;
+  charts['region'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ALL_DATA.regions.map(d => d.Region),
+      datasets: [
+        {label:'Revenue', data: ALL_DATA.regions.map(d => d.Revenue), backgroundColor:'#C9A84C', borderRadius:4},
+        {label:'Profit', data: ALL_DATA.regions.map(d => d.Profit), backgroundColor:'#22C55E', borderRadius:4}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label: c => c.dataset.label+': '+fmt(c.raw)}}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:11}}, grid:{display:false}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildHeatmap() {
+  const regions = ['Atlantic','Gulf','Interior','Pacific'];
+  const divisions = ['Chocolate','Other','Sugar'];
+  const wrap = document.getElementById('heatmapWrap');
+  if (!wrap) return;
+  const maxVal = Math.max(...ALL_DATA.heatmap.map(d => d.Sales));
+  let html = '<table style="width:100%;border-collapse:collapse;font-size:11px">';
+  html += '<tr><td style="padding:4px;color:#8DA0B8"></td>' + divisions.map(d => `<td style="padding:6px 8px;color:#C9A84C;font-weight:600;text-align:center;font-size:10px;text-transform:uppercase;letter-spacing:1px">${d}</td>`).join('') + '</tr>';
+  regions.forEach(r => {
+    html += `<tr><td style="padding:6px 8px;color:#8DA0B8;font-weight:500;font-size:10px;white-space:nowrap">${r}</td>`;
+    divisions.forEach(d => {
+      const item = ALL_DATA.heatmap.find(h => h.Region===r && h.Division===d);
+      const val = item ? item.Sales : 0;
+      const pct = val / maxVal;
+      const r2 = Math.round(255 - pct*205);
+      const g = Math.round(100 + pct*100);
+      const b = Math.round(50);
+      const bg = `rgba(${r2},${g},${b},${0.15+pct*0.7})`;
+      html += `<td style="padding:8px;background:${bg};border-radius:4px;text-align:center;color:${pct>0.5?'#fff':'#8DA0B8'};font-weight:${pct>0.3?'600':'400'};margin:2px">${fmtK(val)}</td>`;
+    });
+    html += '</tr>';
+  });
+  html += '</table>';
+  wrap.innerHTML = html;
+}
+
+function buildShipChart() {
+  destroyChart('ship');
+  const ctx = document.getElementById('shipChart');
+  if (!ctx) return;
+  charts['ship'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ALL_DATA.shipModes.map(d => d.Mode),
+      datasets: [{data: ALL_DATA.shipModes.map(d => d.Orders), backgroundColor:['#3B82F6','#C9A84C','#8DA0B8','#22C55E'], borderWidth:0, hoverOffset:4}]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, cutout:'65%',
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label: c => c.label+': '+c.raw.toLocaleString()+' orders'}}}
+    }
+  });
+}
+
+function buildQtrChart() {
+  destroyChart('qtr');
+  const ctx = document.getElementById('qtrChart');
+  if (!ctx) return;
+  const q24 = ALL_DATA.quarterly.filter(d => d.Year===2024);
+  const q25 = ALL_DATA.quarterly.filter(d => d.Year===2025);
+  charts['qtr'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: ['Q1','Q2','Q3','Q4'],
+      datasets: [
+        {label:'2024 Revenue', data: q24.map(d => d.Revenue), backgroundColor:'rgba(201,168,76,0.5)', borderRadius:4},
+        {label:'2025 Revenue', data: q25.map(d => d.Revenue), backgroundColor:'#C9A84C', borderRadius:4},
+        {label:'2024 Profit', data: q24.map(d => d.Profit), backgroundColor:'rgba(34,197,94,0.4)', borderRadius:4},
+        {label:'2025 Profit', data: q25.map(d => d.Profit), backgroundColor:'#22C55E', borderRadius:4}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label: c => c.dataset.label+': '+fmt(c.raw)}}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:11}}, grid:{display:false}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildCustChart() {
+  destroyChart('cust');
+  const ctx = document.getElementById('custChart');
+  if (!ctx) return;
+  const top = ALL_DATA.customers.slice(0,12);
+  charts['cust'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: top.map(d => 'Cust #'+d.Customer),
+      datasets: [{label:'Revenue', data: top.map(d => d.Revenue), backgroundColor:'#1E3A6E', borderRadius:4},
+                 {label:'Profit', data: top.map(d => d.Profit), backgroundColor:'#C9A84C', borderRadius:4}]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{display:false}}
+      }
+    }
+  });
+}
+
+function buildStateChart() {
+  destroyChart('state');
+  const ctx = document.getElementById('stateChart');
+  if (!ctx) return;
+  const top = ALL_DATA.states.sort((a,b)=>b.Revenue-a.Revenue).slice(0,15);
+  charts['state'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: top.map(d => d.State),
+      datasets: [
+        {label:'Revenue', data: top.map(d => d.Revenue), backgroundColor:'#C9A84C', borderRadius:4},
+        {label:'Profit', data: top.map(d => d.Profit), backgroundColor:'#22C55E', borderRadius:4}
+      ]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label: c => c.dataset.label+': '+fmt(c.raw)}}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{display:false}}
+      }
+    }
+  });
+}
+
+function buildStackChart() {
+  destroyChart('stack');
+  const ctx = document.getElementById('stackChart');
+  if (!ctx) return;
+  const regions = ['Atlantic','Gulf','Interior','Pacific'];
+  const divisions = ['Chocolate','Other','Sugar'];
+  const colors = ['#C9A84C','#3B82F6','#22C55E'];
+  const datasets = divisions.map((div,i) => ({
+    label: div,
+    data: regions.map(r => {
+      const item = ALL_DATA.heatmap.find(h => h.Region===r && h.Division===div);
+      return item ? item.Sales : 0;
+    }),
+    backgroundColor: colors[i],
+    borderRadius: 4
+  }));
+  charts['stack'] = new Chart(ctx, {
+    type: 'bar',
+    data: {labels: regions, datasets},
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{stacked:true, ticks:{color:'#8DA0B8'}, grid:{display:false}},
+        y:{stacked:true, ticks:{color:'#8DA0B8', callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildProdChart() {
+  destroyChart('prod');
+  const ctx = document.getElementById('prodChart');
+  if (!ctx) return;
+  const short = ALL_DATA.products.map(d => ({...d, Short: d.Product.replace('Wonka Bar - ','WB-').replace('Wonka Bar -','WB-').substring(0,22)}));
+  charts['prod'] = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: short.map(d => d.Short),
+      datasets: [
+        {label:'Revenue', data: short.map(d => d.Revenue), backgroundColor:'#C9A84C', borderRadius:4},
+        {label:'Profit', data: short.map(d => d.Profit), backgroundColor:'#22C55E', borderRadius:4}
+      ]
+    },
+    options: {
+      indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{display:false}}
+      }
+    }
+  });
+}
+
+function buildDivChart() {
+  destroyChart('div');
+  const ctx = document.getElementById('divChart');
+  if (!ctx) return;
+  charts['div'] = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ALL_DATA.divisions.map(d => d.Division),
+      datasets: [{data: ALL_DATA.divisions.map(d => d.Revenue), backgroundColor:['#C9A84C','#3B82F6','#22C55E'], borderWidth:0, hoverOffset:4}]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, cutout:'60%',
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label: c => c.label+': '+fmt(c.raw)}}}
+    }
+  });
+}
+
+function buildABC() {
+  const wrap = document.getElementById('abcWrap');
+  if (!wrap) return;
+  const total = ALL_DATA.products.reduce((s,d) => s+d.Revenue, 0);
+  let cumPct = 0;
+  const classified = ALL_DATA.products.map(d => {
+    cumPct += d.Revenue/total*100;
+    return {...d, class: cumPct <= 70 ? 'A' : cumPct <= 90 ? 'B' : 'C'};
+  });
+  const groups = {A: classified.filter(d=>d.class==='A'), B: classified.filter(d=>d.class==='B'), C: classified.filter(d=>d.class==='C')};
+  const colors = {A:'#22C55E',B:'#F59E0B',C:'#EF4444'};
+  const labels = {A:'A Class — Top 70% Revenue (Critical SKUs)',B:'B Class — Next 20% (Important)',C:'C Class — Bottom 10% (Review)'};
+  wrap.innerHTML = Object.entries(groups).map(([cls, items]) => `
+    <div style="margin-bottom:10px">
+      <div style="font-size:10px;color:${colors[cls]};font-weight:600;text-transform:uppercase;letter-spacing:1px;margin-bottom:4px">${labels[cls]}</div>
+      ${items.map(d => `<div style="font-size:11px;color:#8DA0B8;padding:3px 0;border-bottom:1px solid rgba(255,255,255,0.04);display:flex;justify-content:space-between"><span>${d.Product.substring(0,22)}</span><span style="color:${colors[cls]};font-weight:600">${fmtK(d.Revenue)}</span></div>`).join('')}
+    </div>
+  `).join('');
+}
+
+function buildProdTrendChart() {
+  destroyChart('prodTrend');
+  const ctx = document.getElementById('prodTrendChart');
+  if (!ctx) return;
+  const months = ALL_DATA.monthly.map(d => d.Month.replace('20','').replace('-','/'));
+  const colors = ['#C9A84C','#22C55E','#3B82F6','#EF4444','#F59E0B'];
+  const topProds = ALL_DATA.products.slice(0,5);
+  const perMonth = topProds.map((prod,i) => ({
+    label: prod.Product.replace('Wonka Bar - ','').replace('Wonka Bar -','').substring(0,20),
+    data: ALL_DATA.monthly.map(m => +(prod.Revenue/24).toFixed(2)),
+    borderColor: colors[i],
+    backgroundColor: 'transparent',
+    tension:0.4, pointRadius:1, borderWidth:2,
+    borderDash: i>2?[4,2]:[]
+  }));
+  charts['prodTrend'] = new Chart(ctx, {
+    type:'line', data:{labels:months, datasets:perMonth},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, maxRotation:45, autoSkip:true, maxTicksLimit:12}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v)}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildInvDivChart() {
+  destroyChart('invDiv');
+  const ctx = document.getElementById('invDivChart');
+  if (!ctx) return;
+  charts['invDiv'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: ALL_DATA.divisions.map(d => d.Division),
+      datasets:[{label:'Units', data: ALL_DATA.divisions.map(d => d.Units), backgroundColor:['#C9A84C','#3B82F6','#22C55E'], borderRadius:6}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8'}, grid:{display:false}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildInvMonthChart() {
+  destroyChart('invMonth');
+  const ctx = document.getElementById('invMonthChart');
+  if (!ctx) return;
+  const units = ALL_DATA.monthly.map(d => Math.round(d.Revenue / 3.67));
+  charts['invMonth'] = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: ALL_DATA.monthly.map(d => d.Month.replace('20','').replace('-','/')),
+      datasets:[{label:'Units Sold', data:units, borderColor:'#C9A84C', backgroundColor:'rgba(201,168,76,0.08)', fill:true, tension:0.4, pointRadius:2, borderWidth:2}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, maxRotation:45, autoSkip:true, maxTicksLimit:12}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildForecastChart() {
+  destroyChart('forecast');
+  const ctx = document.getElementById('forecastChart');
+  if (!ctx) return;
+  const historical = ALL_DATA.monthly.map(d => d.Revenue);
+  const futureMonths = ['2026-01','2026-02','2026-03','2026-04','2026-05','2026-06'];
+  const lastVal = historical[historical.length-1];
+  const trend = (lastVal - historical[historical.length-4]) / 4;
+  const forecast = futureMonths.map((_,i) => +(lastVal + trend*(i+1)).toFixed(0));
+  const allLabels = [...ALL_DATA.monthly.map(d => d.Month.replace('20','').replace('-','/')), ...futureMonths.map(m => m.replace('20','').replace('-','/'))];
+  const actualData = [...historical, ...new Array(6).fill(null)];
+  const forecastData = [...new Array(historical.length-1).fill(null), historical[historical.length-1], ...forecast];
+  charts['forecast'] = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels:allLabels,
+      datasets:[
+        {label:'Actual', data:actualData, borderColor:'#C9A84C', backgroundColor:'rgba(201,168,76,0.08)', fill:true, tension:0.4, pointRadius:2, borderWidth:2},
+        {label:'Forecast', data:forecastData, borderColor:'#8DA0B8', backgroundColor:'rgba(141,160,184,0.06)', fill:true, tension:0.4, pointRadius:2, borderWidth:2, borderDash:[5,3]}
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, maxRotation:45, autoSkip:true, maxTicksLimit:14}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildLogShipChart() {
+  destroyChart('logShip');
+  const ctx = document.getElementById('logShipChart');
+  if (!ctx) return;
+  charts['logShip'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: ALL_DATA.shipModes.map(d => d.Mode),
+      datasets:[
+        {label:'Orders', data: ALL_DATA.shipModes.map(d => d.Orders), backgroundColor:'#1E3A6E', borderRadius:4, yAxisID:'y'},
+        {label:'Revenue', data: ALL_DATA.shipModes.map(d => d.Revenue), backgroundColor:'#C9A84C', borderRadius:4, yAxisID:'y1'}
+      ]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{display:false}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}, position:'left'},
+        y1:{ticks:{color:'#C9A84C', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{display:false}, position:'right'}
+      }
+    }
+  });
+}
+
+function buildLogRegChart() {
+  destroyChart('logReg');
+  const ctx = document.getElementById('logRegChart');
+  if (!ctx) return;
+  charts['logReg'] = new Chart(ctx, {
+    type:'bar',
+    data:{
+      labels: ALL_DATA.regions.map(d => d.Region),
+      datasets:[{label:'Orders', data: ALL_DATA.regions.map(d => d.Orders), backgroundColor:['#C9A84C','#3B82F6','#22C55E','#EF4444'], borderRadius:6}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8'}, grid:{display:false}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildLogMonthChart() {
+  destroyChart('logMonth');
+  const ctx = document.getElementById('logMonthChart');
+  if (!ctx) return;
+  charts['logMonth'] = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: ALL_DATA.monthly.map(d => d.Month.replace('20','').replace('-','/')),
+      datasets:[{label:'Orders', data: ALL_DATA.monthly.map(d => d.Orders), borderColor:'#3B82F6', backgroundColor:'rgba(59,130,246,0.08)', fill:true, tension:0.4, pointRadius:2, borderWidth:2}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, maxRotation:45, autoSkip:true, maxTicksLimit:12}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}}, grid:{color:'rgba(255,255,255,0.04)'}}
+      }
+    }
+  });
+}
+
+function buildScatterChart() {
+  destroyChart('scatter');
+  const ctx = document.getElementById('scatterChart');
+  if (!ctx) return;
+  const data = ALL_DATA.states.map(d => ({x:d.Revenue, y:d.Profit, r:Math.max(3, Math.sqrt(d.Units/3)), label:d.State}));
+  charts['scatter'] = new Chart(ctx, {
+    type:'bubble',
+    data:{datasets:[{label:'States', data, backgroundColor:'rgba(201,168,76,0.4)', borderColor:'#C9A84C', borderWidth:1}]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}, tooltip:{callbacks:{label: c => `${c.raw.label}: Rev ${fmt(c.raw.x)}, Profit ${fmt(c.raw.y)}`}}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}, title:{display:true,text:'Revenue',color:'#8DA0B8',font:{size:11}}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => '$'+Math.round(v/1000)+'K'}, grid:{color:'rgba(255,255,255,0.04)'}, title:{display:true,text:'Profit',color:'#8DA0B8',font:{size:11}}}
+      }
+    }
+  });
+}
+
+function buildMarginCards() {
+  const wrap = document.getElementById('marginCards');
+  if (!wrap) return;
+  wrap.innerHTML = ALL_DATA.divisions.map(d => {
+    const margin = (d.Profit/d.Revenue*100).toFixed(1);
+    const pct = parseFloat(margin);
+    const color = pct > 60 ? '#22C55E' : pct > 40 ? '#F59E0B' : '#EF4444';
+    return `
+      <div class="mini-card" style="margin-bottom:10px">
+        <div>
+          <div class="mini-card-label">${d.Division}</div>
+          <div style="font-size:11px;color:#8DA0B8;margin-top:2px">${fmt(d.Revenue)} revenue</div>
+          <div class="progress-bar" style="width:160px;margin-top:6px"><div class="progress-fill" style="width:${margin}%;background:${color}"></div></div>
+        </div>
+        <div style="font-size:22px;font-weight:700;color:${color};font-family:'Playfair Display',serif">${margin}%</div>
+      </div>
+    `;
+  }).join('');
+}
+
+function buildMarginTrendChart() {
+  destroyChart('marginTrend');
+  const ctx = document.getElementById('marginTrendChart');
+  if (!ctx) return;
+  const marginData = ALL_DATA.monthly.map(d => +(d.Profit/d.Revenue*100).toFixed(1));
+  charts['marginTrend'] = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels: ALL_DATA.monthly.map(d => d.Month.replace('20','').replace('-','/')),
+      datasets:[{label:'Gross Margin %', data:marginData, borderColor:'#22C55E', backgroundColor:'rgba(34,197,94,0.08)', fill:true, tension:0.4, pointRadius:2, borderWidth:2}]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        x:{ticks:{color:'#8DA0B8', font:{size:10}, maxRotation:45, autoSkip:true, maxTicksLimit:12}, grid:{color:'rgba(255,255,255,0.04)'}},
+        y:{ticks:{color:'#8DA0B8', font:{size:10}, callback: v => v+'%'}, grid:{color:'rgba(255,255,255,0.04)'}, min:50, max:80}
+      }
+    }
+  });
+}
+
+function buildLeaderboard() {
+  const body = document.getElementById('leaderboardBody');
+  if (!body) return;
+  const top = ALL_DATA.states.sort((a,b) => b.Profit-a.Profit).slice(0,10);
+  body.innerHTML = top.map((d,i) => {
+    const margin = (d.Profit/d.Revenue*100).toFixed(1);
+    const trend = d.Revenue > 5000 ? '<span style="color:#22C55E"><i class="ti ti-trending-up" aria-hidden="true"></i> High</span>' : d.Revenue > 1000 ? '<span style="color:#F59E0B"><i class="ti ti-trending-up" aria-hidden="true"></i> Mid</span>' : '<span style="color:#8DA0B8">Low</span>';
+    return `<tr>
+      <td><span class="rank">${i+1}</span></td>
+      <td style="font-weight:500">${d.State}</td>
+      <td>${fmt(d.Revenue)}</td>
+      <td style="color:#22C55E">${fmt(d.Profit)}</td>
+      <td><span style="color:${parseFloat(margin)>65?'#22C55E':parseFloat(margin)>60?'#F59E0B':'#EF4444'}">${margin}%</span></td>
+      <td>${d.Units.toLocaleString()}</td>
+      <td>${trend}</td>
+    </tr>`;
+  }).join('');
+}
+
+function buildExecSection() {
+  const rev = document.getElementById('execRevContent');
+  const prof = document.getElementById('execProfContent');
+  const log = document.getElementById('execLogContent');
+  const inv = document.getElementById('execInvContent');
+  if (!rev) return;
+
+  const metrics = (items) => items.map(([label, val, pct, tag]) => `
+    <div class="target-row">
+      <span style="color:#8DA0B8;font-size:13px">${label}</span>
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="target-pct" style="color:${tag==='Exceeded'?'#22C55E':tag==='On Track'?'#F59E0B':'#EF4444'}">${val}</span>
+        <span class="tag ${tag==='Exceeded'?'tag-g':tag==='On Track'?'tag-a':'tag-r'}">${tag}</span>
+      </div>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${tag==='Exceeded'?'#22C55E':tag==='On Track'?'#F59E0B':'#EF4444'}"></div></div>
+    <div style="margin-bottom:10px"></div>
+  `).join('');
+
+  rev.innerHTML = metrics([
+    ['Total Revenue','$141,784','89','On Track'],
+    ['YoY Growth','44.6%','100','Exceeded'],
+    ['Pacific Region','$46,302','95','On Track'],
+    ['AOV','$16.58','78','On Track']
+  ]);
+  prof.innerHTML = metrics([
+    ['Gross Profit','$93,443','100','Exceeded'],
+    ['Gross Margin','65.9%','100','Exceeded'],
+    ['Chocolate Margin','67.4%','100','Exceeded'],
+    ['Other Division Margin','44.8%','60','On Track']
+  ]);
+  log.innerHTML = metrics([
+    ['Orders Processed','8,549','90','On Track'],
+    ['Standard Class Fill','60.2%','100','Exceeded'],
+    ['Same Day Availability','5.2%','75','On Track'],
+    ['Multi-Region Coverage','4 regions','100','Exceeded']
+  ]);
+  inv.innerHTML = metrics([
+    ['Units Sold','38,654','88','On Track'],
+    ['Inventory Turnover','8.4×','100','Exceeded'],
+    ['Stock Availability','96.2%','100','Exceeded'],
+    ['SKU Coverage','15 products','75','On Track']
+  ]);
+}
+
+function initAllCharts() {
+  updateKPIs(141783.63, 93442.80, 8549);
+  buildTrendChart();
+  buildRegionChart();
+  buildHeatmap();
+  buildShipChart();
+  buildQtrChart();
+  buildCustChart();
+  buildStateChart();
+  buildStackChart();
+  buildProdChart();
+  buildDivChart();
+  buildABC();
+  buildProdTrendChart();
+  buildInvDivChart();
+  buildInvMonthChart();
+  buildForecastChart();
+  buildLogShipChart();
+  buildLogRegChart();
+  buildLogMonthChart();
+  buildScatterChart();
+  buildMarginCards();
+  buildMarginTrendChart();
+  buildLeaderboard();
+  buildExecSection();
+}
+
+setTimeout(initAllCharts, 100);
+</script>
